@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import {ModificationRequest} from "../shared/models/modificationRequest";
 
 @Component({
   selector: 'app-root',

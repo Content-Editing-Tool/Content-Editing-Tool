@@ -40,6 +40,9 @@ jobs:
           cd frontend
           npm install
 
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
       - name: Build Frontend
         run: |
           cd frontend

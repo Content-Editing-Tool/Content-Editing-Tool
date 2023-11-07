@@ -43,4 +43,4 @@ jobs:
       - name: Build Frontend
         run: |
           cd frontend
-          ng build --prod  # Replace with your build command for Angular
+          ng build 

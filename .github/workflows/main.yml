@@ -21,6 +21,7 @@ jobs:
 
       - name: Build Backend
         run: |
+          chmod +x backend/gradlew
           cd backend
           ./gradlew build  
 

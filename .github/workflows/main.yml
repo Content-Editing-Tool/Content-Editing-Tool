@@ -22,7 +22,7 @@ jobs:
       - name: Build Backend
         run: |
           cd backend
-          ./gradlew clean build  
+          ./gradlew build  
 
       - name: Test Backend
         run: |

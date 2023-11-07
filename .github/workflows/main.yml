@@ -17,6 +17,7 @@ jobs:
         uses: actions/setup-java@v2
         with:
           java-version: '17.0.9'  
+          distribution: 'adopt'
 
       - name: Build Backend
         run: |

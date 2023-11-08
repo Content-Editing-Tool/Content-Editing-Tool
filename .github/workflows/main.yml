@@ -1,0 +1,49 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set Up Java
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17.0.9'  
+          distribution: 'adopt'
+
+      - name: Build Backend
+        run: |
+          chmod +x backend/gradlew
+          cd backend
+          ./gradlew build  
+
+      - name: Test Backend
+        run: |
+          cd backend
+          ./gradlew test  
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '18.17.0'  
+
+      - name: Install Frontend Dependencies
+        run: |
+          cd frontend
+          npm install
+
+      - name: Install Angular CLI
+        run: npm install -g @angular/cli
+
+      - name: Build Frontend
+        run: |
+          cd frontend
+          ng build 

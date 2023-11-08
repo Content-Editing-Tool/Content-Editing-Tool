@@ -1,7 +1,9 @@
  export const modificationtoolData=[
    {
      routeLink: 'dashboard',
-     icon: 'fal fa-home',
-     label: 'Dashboard'
+     labelName: 'Name:',
+     labelPlaceholder: 'Placeholder:',
+     labelType: 'Type:',
+
    }
  ];

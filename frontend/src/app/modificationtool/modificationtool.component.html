@@ -8,15 +8,39 @@
     </button>
   </div>
   <ul class="sidenav-nav">
+    <button (click)="selectElement()" class="sidenav-button-select" *ngIf="collapsed">Select Element</button>
     <li class="sidenav-nav-item" *ngFor="let data of toolData">
       <a class="sidenav-nav-link" [routerLink]="[data.routeLink]">
-        <i class="sidenav-link-icon" [class]="data.icon"></i>
-        <span class="sidenav-link-text" *ngIf="collapsed">{{data.label}}</span>
+        <span class="sidenav-link-text" *ngIf="collapsed">{{data.labelName}}</span>
+        <input type="text" class="sidenav-link-text-area" *ngIf="collapsed" [value]="nameInfo">
+      </a>
+      <a class="sidenav-nav-link" [routerLink]="[data.routeLink]">
+        <span class="sidenav-link-text" *ngIf="collapsed">{{data.labelPlaceholder}}</span>
+        <input type="text" class="sidenav-link-text-area" *ngIf="collapsed" [value]="placeholderInfo">
+      </a>
+      <a class="sidenav-nav-link" [routerLink]="[data.routeLink]">
+        <span class="sidenav-link-text" *ngIf="collapsed">{{data.labelType}}</span>
+        <input type="text" class="sidenav-link-text-area" *ngIf="collapsed" [value]="typeInfo">
+      </a>
+      <a class="sidenav-nav-link" [routerLink]="[data.routeLink]">
+        <span class="sidenav-link-text" *ngIf="collapsed">{{data.labelName}}</span>
+        <input type="text" class="sidenav-link-text-area" *ngIf="collapsed">
       </a>
     </li>
+    <button class="sidenav-button-update" *ngIf="collapsed">Send Update</button>
   </ul>
 </div>
 
-<div class="body-content">
-  <h1>SKRRRRRRRRRRRRRR</h1>
+<div class="body-content" #contentContainer>
+  <h1>CONTENT</h1>
+  <h2>Name</h2>
+  <input placeholder="name">
+  <h2>Name2</h2>
+  <input placeholder="name2">
+
+
+  <div>
+    {{ elementInfo }}
+  </div>
+
 </div>

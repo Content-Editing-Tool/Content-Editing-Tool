@@ -1,5 +1,8 @@
-import { Component, EventEmitter, Output, ElementRef, ViewChild } from "@angular/core";
+import { Component, EventEmitter, Output, ElementRef, ViewChild, OnInit } from "@angular/core";
 import { modificationtoolData } from "./tool-data";
+import {UserData} from "../models/userdata";
+import {UserDataService} from "../services/userdata.service";
+
 
 interface SideNavToggle {
   screenWidth: number;
@@ -11,12 +14,14 @@ interface SideNavToggle {
   templateUrl: './modificationtool.component.html',
   styleUrls: ['./modificationtool.component.scss']
 })
-export class ModificationtoolComponent {
+export class ModificationtoolComponent implements OnInit{
 
   @Output() onToggleSideNav: EventEmitter<SideNavToggle> = new EventEmitter();
   collapsed = true;
   screenWidth = 0;
   toolData = modificationtoolData;
+
+  constructor(private UserService: UserDataService) {}
 
   // Define your variables for element information
   selectedElement: any;
@@ -24,6 +29,16 @@ export class ModificationtoolComponent {
   placeholderInfo: string = '';
   nameInfo: string = '';
   typeInfo: string = '';
+  tagName: string = '';
+  users: UserData[] | undefined;
+
+  ngOnInit(): void {
+    this.UserService.getUsers().subscribe((data: UserData[]) => {
+      console.log(data);
+      this.users = data;
+  });
+  }
+
 
   isSelecting: boolean = false;
 
@@ -63,23 +78,27 @@ export class ModificationtoolComponent {
   updateElementInfo() {
     if (this.isSelecting) {
       if (this.selectedElement) {
-        const tagName = this.selectedElement.tagName;
+        const tagInfo = this.selectedElement.tagName;
         const placeholder = this.selectedElement.placeholder;
         const type = this.selectedElement.type;
         const classes = Array.from(this.selectedElement.classList).join(' ');
+        const name = this.selectedElement.name;
 
-        this.elementInfo = `Tag Name: ${tagName}\nPlaceholder: ${placeholder}\nClasses: ${classes}`;
+        this.elementInfo = `Tag Name: ${tagInfo}\nPlaceholder: ${placeholder}\nClasses: ${classes}`;
         this.placeholderInfo = `${placeholder}`;
-        this.nameInfo = `${tagName}`;
+        this.tagName = `${tagInfo}`;
         this.typeInfo = `${type}`;
+        this.nameInfo = `${name}`;
       }
     } else {
       this.elementInfo = '';
       this.placeholderInfo = '';
       this.nameInfo = '';
       this.typeInfo = '';
+      this.nameInfo = '';
     }
   }
 
   protected readonly name = name;
+  protected readonly UserData = UserData;
 }

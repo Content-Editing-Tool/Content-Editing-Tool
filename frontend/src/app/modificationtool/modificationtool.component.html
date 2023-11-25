@@ -42,11 +42,19 @@
   <br>
   <br>
   <br>
-  <tbody>
-  <tr *ngFor = "let UserData of users">
-    <td> {{ UserData.firstName}}</td>
-  </tr>
-  </tbody>
+
+
+  <table *ngIf="components && components.length > 0">
+    <tbody>
+    <tr *ngFor="let ComponentData of components">
+      <td>{{ ComponentData.name }}</td>
+    </tr>
+    </tbody>
+  </table>
+
+
+
+
 
 
   <div>

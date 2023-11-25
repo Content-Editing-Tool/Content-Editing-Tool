@@ -1,18 +1,18 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
-import { UserData } from '../models/userdata';
+import { ComponentData } from '../models/userdata';
 
 @Injectable({
   providedIn: 'root'
 })
 export class UserDataService {
 
-  private baseUrl = "http://localhost:8080/";
+  private baseUrl = "http://localhost:8080/component/components";
 
   constructor(private http: HttpClient) { }
 
-  getUsers(): Observable<UserData[]>{
-    return this.http.get<UserData[]>(`${this.baseUrl}`);
+  getComponents(): Observable<ComponentData[]>{
+    return this.http.get<ComponentData[]>(`${this.baseUrl}`);
   }
 }

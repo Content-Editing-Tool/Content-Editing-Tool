@@ -1,3 +1,3 @@
-export class UserData {
-  firstName: string | undefined;
+export class ComponentData {
+  name?: string ;
 }

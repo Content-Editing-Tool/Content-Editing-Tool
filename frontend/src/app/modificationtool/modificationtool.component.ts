@@ -21,7 +21,7 @@ export class ModificationtoolComponent implements OnInit{
   screenWidth = 0;
   toolData = modificationtoolData;
 
-  constructor(private UserService: UserDataService) {}
+  constructor(private UserDataService: UserDataService) {}
 
   // Define your variables for element information
   selectedElement: any;
@@ -33,7 +33,7 @@ export class ModificationtoolComponent implements OnInit{
   components?: ComponentData[];
 
   ngOnInit(): void {
-    this.UserService.getComponents().subscribe((data: ComponentData[]) => {
+    this.UserDataService.getComponents().subscribe((data: ComponentData[]) => {
       console.log(data);
       this.components = data;
   });

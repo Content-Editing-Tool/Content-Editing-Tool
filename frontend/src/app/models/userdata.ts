@@ -1,3 +1,6 @@
 export class ComponentData {
-  name?: string ;
+  pageCode: string ;
+  constructor(pageCode: string) {
+    this.pageCode = pageCode;
+  }
 }

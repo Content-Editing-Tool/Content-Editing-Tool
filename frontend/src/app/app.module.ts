@@ -6,11 +6,13 @@ import { HttpClientModule } from  '@angular/common/http';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import {ModificationtoolComponent} from "./modificationtool/modificationtool.component";
+import {ContentpageComponent} from "./contentpage/contentpage.component";
 
 @NgModule({
   declarations: [
     AppComponent,
-    ModificationtoolComponent
+    ModificationtoolComponent,
+    ContentpageComponent
   ],
   imports: [
     BrowserModule,
@@ -18,6 +20,6 @@ import {ModificationtoolComponent} from "./modificationtool/modificationtool.com
     HttpClientModule
   ],
   providers: [],
-  bootstrap: [ModificationtoolComponent]
+  bootstrap: [AppComponent]
 })
 export class AppModule { }

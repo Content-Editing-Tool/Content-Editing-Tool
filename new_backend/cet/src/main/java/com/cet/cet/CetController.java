@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.context.annotation.Bean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.util.StringUtils;
 
 import java.util.List; 
 import java.util.ArrayList; 
@@ -46,12 +47,21 @@ public class CetController {
             JSONObject properties = new JSONObject();
             JSONObject questionText = new JSONObject();
             for (MultiLingualText mlt: attribute.getQuestionText().getText()) {
-                questionText.put(mlt.getLanguage(), mlt.getValue());
+                questionText.put("<h2>" + mlt.getLanguage() + "</h2>", "<p>" + mlt.getValue() + "</p>");
             }
-            properties.put("questionText", questionText);
-            data.put(attribute.getName(), properties);
+            properties.put("<h2>questionText</h2>", questionText);
+            data.put("<h1>" + attribute.getName() + "</h1>", properties);
         }
-        return data.toString(2);
+        String response = hackFixBackslashes(data.toString());
+        return response;
+    }
+
+    private String hackFixBackslashes(String s) {
+        String result = s;
+        result = StringUtils.replace(result, "<\\/h1>", "</h1>");
+        result = StringUtils.replace(result, "<\\/h2>", "</h2>");
+        result = StringUtils.replace(result, "<\\/p>", "</p>");
+        return result;
     }
 
     @PostMapping("/requestChanges")
@@ -73,13 +83,15 @@ public class CetController {
             boolean modified = false;
             for (MultiLingualText mlt: attribute.getQuestionText().getText()) {
                 String originalText = mlt.getValue();
-                String requestText = data.getJSONObject(attribute.getName()).getJSONObject("questionText").getString(mlt.getLanguage());
+                String htmlRequestText = data.getJSONObject("<h1>" + attribute.getName() + "</h1>").getJSONObject("<h2>questionText</h2>").getString("<h2>" + mlt.getLanguage() + "</h2>");
+                String requestText = StringUtils.replace(htmlRequestText, "<p>", "");
+                requestText = StringUtils.replace(requestText, "</p>", "");
                 if (!originalText.equals(requestText)) {
                     modified = true;
                     mlt.setValue(requestText);
                 }
             }
-            if (modified) {
+            if (modified) { 
                 result.add(new Pair<AttributeKey, Attribute>(p.getValue0(), attribute));
             }
         }

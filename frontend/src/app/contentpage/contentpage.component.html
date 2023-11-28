@@ -1,0 +1,3 @@
+<div *ngFor="let componentData of components" [innerHtml]="getSafeHtml(componentData.pageCode)" #contentContainer>
+  <!-- The HTML from componentData.pageCode will be rendered here -->
+</div>

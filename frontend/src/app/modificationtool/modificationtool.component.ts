@@ -1,6 +1,6 @@
 import { Component, EventEmitter, Output, ElementRef, ViewChild, OnInit } from "@angular/core";
 import { modificationtoolData } from "./tool-data";
-import {UserData} from "../models/userdata";
+import {ComponentData} from "../models/userdata";
 import {UserDataService} from "../services/userdata.service";
 
 
@@ -21,7 +21,7 @@ export class ModificationtoolComponent implements OnInit{
   screenWidth = 0;
   toolData = modificationtoolData;
 
-  constructor(private UserService: UserDataService) {}
+  constructor(private UserDataService: UserDataService) {}
 
   // Define your variables for element information
   selectedElement: any;
@@ -30,12 +30,12 @@ export class ModificationtoolComponent implements OnInit{
   nameInfo: string = '';
   typeInfo: string = '';
   tagName: string = '';
-  users: UserData[] | undefined;
+  components?: ComponentData[];
 
   ngOnInit(): void {
-    this.UserService.getUsers().subscribe((data: UserData[]) => {
+    this.UserDataService.getComponents().subscribe((data: ComponentData[]) => {
       console.log(data);
-      this.users = data;
+      this.components = data;
   });
   }
 
@@ -100,5 +100,5 @@ export class ModificationtoolComponent implements OnInit{
   }
 
   protected readonly name = name;
-  protected readonly UserData = UserData;
+  protected readonly ComponentData = ComponentData;
 }

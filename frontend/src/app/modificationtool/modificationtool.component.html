@@ -10,19 +10,19 @@
   <ul class="sidenav-nav">
     <button (click)="selectElement()" class="sidenav-button-select" *ngIf="collapsed">Select Element</button>
     <li class="sidenav-nav-item" *ngFor="let data of toolData">
-      <a class="sidenav-nav-link" [routerLink]="[data.routeLink]">
+      <a class="sidenav-nav-link">
         <span class="sidenav-link-text" *ngIf="collapsed">{{data.labelName}}</span>
         <input type="text" class="sidenav-link-text-area" *ngIf="collapsed" [value]="nameInfo">
       </a>
-      <a class="sidenav-nav-link" [routerLink]="[data.routeLink]">
+      <a class="sidenav-nav-link">
         <span class="sidenav-link-text" *ngIf="collapsed">{{data.labelPlaceholder}}</span>
         <input type="text" class="sidenav-link-text-area" *ngIf="collapsed" [value]="placeholderInfo">
       </a>
-      <a class="sidenav-nav-link" [routerLink]="[data.routeLink]">
+      <a class="sidenav-nav-link">
         <span class="sidenav-link-text" *ngIf="collapsed">{{data.labelType}}</span>
         <input type="text" class="sidenav-link-text-area" *ngIf="collapsed" [value]="typeInfo">
       </a>
-      <a class="sidenav-nav-link" [routerLink]="[data.routeLink]">
+      <a class="sidenav-nav-link">
         <span class="sidenav-link-text" *ngIf="collapsed">{{data.labelName}}</span>
         <input type="text" class="sidenav-link-text-area" *ngIf="collapsed">
       </a>
@@ -31,26 +31,8 @@
   </ul>
 </div>
 
-<div class="body-content" #contentContainer>
-  <h1>CONTENT</h1>
-  <h2>Name</h2>
-  <input placeholder="name">
-  <h2>Name2</h2>
-  <input placeholder="name2">
-  <br>
-  <br>
-  <br>
-  <br>
-  <br>
-  <tbody>
-  <tr *ngFor = "let UserData of users">
-    <td> {{ UserData.firstName}}</td>
-  </tr>
-  </tbody>
-
-
-  <div>
-    {{ elementInfo }}
+<div class="main" #contentContainer>
+  <h1 class="main-title">Blueriq</h1>
   </div>
 
-</div>
+

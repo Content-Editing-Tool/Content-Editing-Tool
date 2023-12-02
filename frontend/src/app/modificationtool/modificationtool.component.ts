@@ -2,6 +2,7 @@ import { Component, EventEmitter, Output, ElementRef, ViewChild, OnInit } from "
 import { modificationtoolData } from "./tool-data";
 import {ComponentData} from "../models/userdata";
 import {UserDataService} from "../services/userdata.service";
+import {DomSanitizer, SafeHtml} from "@angular/platform-browser";
 
 
 interface SideNavToggle {
@@ -21,7 +22,7 @@ export class ModificationtoolComponent implements OnInit{
   screenWidth = 0;
   toolData = modificationtoolData;
 
-  constructor(private UserDataService: UserDataService) {}
+  constructor(private UserDataService: UserDataService,  private sanitizer: DomSanitizer) {}
 
   // Define your variables for element information
   selectedElement: any;
@@ -31,6 +32,10 @@ export class ModificationtoolComponent implements OnInit{
   typeInfo: string = '';
   tagName: string = '';
   components?: ComponentData[];
+
+  getSafeHtml(html: string): SafeHtml {
+    return this.sanitizer.bypassSecurityTrustHtml(html);
+  }
 
   ngOnInit(): void {
     this.UserDataService.getComponents().subscribe((data: ComponentData[]) => {

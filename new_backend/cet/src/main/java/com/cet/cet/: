@@ -96,63 +96,6 @@ public class CetController {
         }
     }
 
-    @PostMapping("/requestChanges")
-    @ResponseStatus(HttpStatus.OK)
-    public void requestChanges(@RequestBody String raw) {
-        ModuleKey module = new ModuleKey();
-        module.setName("Kinderbijslag");
-        module.setModuleType(ModuleType.fromValue("Interaction"));
-
-        JSONObject json = new JSONObject(raw);
-        List<ModuleElementKey> keys = client.getModuleElements("Kinderbijslag", "Trunk", "Kinderbijslag", module, ModuleElementType.fromValue("Attribute"));
-
-        ArrayOfOperationEntry arrayOfOperationEntry = new ArrayOfOperationEntry();
-        List<OperationEntry> operations = arrayOfOperationEntry.getOperationEntry(); 
-
-        for (ModuleElementKey elementKey: keys) {
-            AttributeKey attributeKey = (AttributeKey)elementKey;
-            String name = attributeKey.getEntity() + "." + attributeKey.getName(); 
-
-            if (json.has(name)) {
-                Attribute attribute = (Attribute)client.getModuleElement("Kinderbijslag", "Trunk", "Kinderbijslag", module, attributeKey);
-                setQuestionText(attribute, json.getJSONObject(name).getJSONObject("questionText"));
-
-                ModuleElementOperation operation = new ModuleElementOperation();
-
-                operation.setProject("Kinderbijslag");
-                operation.setModule(module);
-                operation.setOriginalKey(attributeKey);
-                operation.setModuleElement(attribute);
-                operation.setType(ChangeType.fromValue("Update"));
-
-                OperationEntry operationEntry = new OperationEntry();
-                operationEntry.setModuleElementOperation(operation);
-                operations.add(operationEntry);
-            }
-        }
-
-        OperationSet operationSet = new OperationSet();
-        operationSet.setOperations(arrayOfOperationEntry);
-
-        client.applyOperations("Kinderbijslag", "CET_request", operationSet);
-    }
-
-    private void setQuestionText(Attribute attribute, JSONObject json) {
-        for (MultiLingualText mlt: attribute.getQuestionText().getText()) {
-            if (mlt.getLanguage().equals("Nederlands")) {
-                mlt.setValue(json.getString("nl")); 
-            } else if (mlt.getLanguage().equals("English")) {
-                mlt.setValue(json.getString("en")); 
-            } 
-        }
-    }
-
-    //private void createRequestChangesBranch() {
-        //Branch cetBranch = new Branch();
-        //cetBranch.setName("CET_request");
-        //client.createFeatureBranch(repository, branch, cetBranch);
-    //}
-
     //@GetMapping("/test")
     //@ResponseStatus(HttpStatus.OK)
     //public void getPageContent() {
@@ -211,4 +154,146 @@ public class CetController {
         //} 
 
     //}
+
+    //@GetMapping("/attributes")
+    //@ResponseStatus(HttpStatus.OK)
+    //public String getAttributes() {
+        //JSONObject data = new JSONObject();
+        //for (Pair<AttributeKey, Attribute> p: attributes) {
+            //Attribute attribute = p.getValue1();
+            //JSONObject properties = new JSONObject();
+            //JSONObject questionText = new JSONObject();
+            //for (MultiLingualText mlt: attribute.getQuestionText().getText()) {
+                //questionText.put(mlt.getLanguage(), mlt.getValue());
+            //}
+            //properties.put("questionText", questionText);
+            //data.put(attribute.getName(), properties);
+        //}
+        //return data.toString();
+    //}
+
+    @PostMapping("/requestChanges")
+    @ResponseStatus(HttpStatus.OK)
+    public void requestChanges(@RequestBody String raw) {
+        ModuleKey module = new ModuleKey();
+        module.setName("Kinderbijslag");
+        module.setModuleType(ModuleType.fromValue("Interaction"));
+
+        JSONObject json = new JSONObject(raw);
+        ArrayList<Attribute> attributes = new ArrayList<Attribute>();
+        for (String s: json.keySet()) {
+            String[] tmp = s.split(".", 2);
+            String entity = tmp[0];
+            String name = tmp[1];
+
+            AttributeKey key = new AttributeKey();
+            key.setName(name);
+            key.setEntity(entity);
+
+            Attribute attribute = (Attribute) client.getModuleElement("Kinderbijslag", "Trunk", "Kinderbijslag", module, key);
+            attribute.setName(name);
+            attribute.setEntity(entity);
+
+            setQuestionText(attribute, json.getJSONObject(s).getJSONObject("questionText"));
+            
+            attributes.add(attribute);
+        }
+        requestChanges(attributes);
+    }
+
+    private void setQuestionText(Attribute attribute, JSONObject json) {
+        for (MultiLingualText mlt: attribute.getQuestionText().getText()) {
+            if (mlt.getLanguage().equals("Nederlands")) {
+                mlt.setValue(json.getString("nl")); 
+            } else if (mlt.getLanguage().equals("English")) {
+                mlt.setValue(json.getString("en")); 
+            } 
+        }
+    }
+
+    //private List<Pair<AttributeKey, Attribute>> getModified(JSONObject data) {
+        //ArrayList<Pair<AttributeKey, Attribute>> result = new ArrayList<Pair<AttributeKey, Attribute>>();
+
+        //for (Pair<AttributeKey, Attribute> p: attributes) {
+            //Attribute attribute = p.getValue1();
+            //boolean modified = false;
+            //for (MultiLingualText mlt: attribute.getQuestionText().getText()) {
+                //String originalText = mlt.getValue();
+                //String requestText = data.getJSONObject(attribute.getName()).getJSONObject("questionText").getString(mlt.getLanguage());
+                //if (!originalText.equals(requestText)) {
+                    //modified = true;
+                    //mlt.setValue(requestText);
+                //}
+            //}
+            //if (modified) { 
+                //result.add(new Pair<AttributeKey, Attribute>(p.getValue0(), attribute));
+            //}
+        //}
+        //return result;
+    //}
+
+    //private void initialize() {
+        //initModule();
+        //initAttributes();
+    //}
+    
+    //private void initModule() {
+        //List<ModuleKey> modules = client.getModules(repository, branch, project);
+        //for (ModuleKey m: modules) {
+            //if (m.getModuleType().value() == "Interaction") {
+                //module = m;
+                //return;
+            //}
+        //}
+    //}
+
+    //private void initAttributes() {
+        //attributes = new ArrayList<Pair<AttributeKey, Attribute>>();
+        //List<ModuleElementKey> keys = client.getAllModuleElements(repository, branch, project, module);
+        //for (ModuleElementKey key: keys) {
+            //ModuleElement element = client.getModuleElement(repository, branch, project, module, key);
+            //if (element instanceof Attribute) {
+                //attributes.add(new Pair<AttributeKey, Attribute>((AttributeKey)key, (Attribute)element));
+           //}
+       //}
+    //}
+
+    //private void createRequestChangesBranch() {
+        //Branch cetBranch = new Branch();
+        //cetBranch.setName("CET_request");
+        //client.createFeatureBranch(repository, branch, cetBranch);
+    //}
+
+    private void requestChanges(List<Attribute> attributes) {
+        //createRequestChangesBranch();
+        ModuleKey module = new ModuleKey();
+        module.setName("Kinderbijslag");
+        module.setModuleType(ModuleType.fromValue("Interaction"));
+
+        ArrayOfOperationEntry arrayOfOperationEntry = new ArrayOfOperationEntry();
+        List<OperationEntry> operations = arrayOfOperationEntry.getOperationEntry(); 
+
+        for (Attribute attribute: attributes) {
+            AttributeKey key = new AttributeKey();
+            key.setName(attribute.getName());
+            key.setEntity(attribute.getEntity());
+
+            ModuleElementOperation operation = new ModuleElementOperation();
+
+            operation.setProject("Kinderbijslag");
+            operation.setModule(module);
+            operation.setOriginalKey(key);
+            operation.setModuleElement(attribute);
+            operation.setType(ChangeType.fromValue("Update"));
+
+            OperationEntry operationEntry = new OperationEntry();
+            operationEntry.setModuleElementOperation(operation);
+            operations.add(operationEntry);
+        }
+
+        OperationSet operationSet = new OperationSet();
+        operationSet.setOperations(arrayOfOperationEntry);
+
+        client.applyOperations(repository, "CET_request", operationSet);
+    }
 }

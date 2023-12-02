@@ -34,15 +34,28 @@ public class ManagementServiceClient extends WebServiceGatewaySupport {
         return response.getGetModuleElementResult();
     }
 
-    public List<ModuleElementKey> getAllModuleElements(String repository, String branch, String project, ModuleKey module) {
-        GetAllModuleElements request = new GetAllModuleElements();
+    //public List<ModuleElementKey> getAllModuleElements(String repository, String branch, String project, ModuleKey module) {
+        //GetAllModuleElements request = new GetAllModuleElements();
+        //request.setRepository(repository);
+        //request.setBranch(branch);
+        //request.setProject(project);
+        //request.setModule(module);
+
+        //GetAllModuleElementsResponse response = (GetAllModuleElementsResponse) getWebServiceTemplate().marshalSendAndReceive(endpoint, request, new SoapActionCallback("GetAllModuleElements"));
+        //return response.getGetAllModuleElementsResult().getModuleElementKey();
+    //}
+
+
+    public List<ModuleElementKey> getModuleElements(String repository, String branch, String project, ModuleKey module, ModuleElementType type) {
+        GetModuleElements request = new GetModuleElements();
         request.setRepository(repository);
         request.setBranch(branch);
         request.setProject(project);
         request.setModule(module);
+        request.setElementType(type);
 
-        GetAllModuleElementsResponse response = (GetAllModuleElementsResponse) getWebServiceTemplate().marshalSendAndReceive(endpoint, request, new SoapActionCallback("GetAllModuleElements"));
-        return response.getGetAllModuleElementsResult().getModuleElementKey();
+        GetModuleElementsResponse response = (GetModuleElementsResponse) getWebServiceTemplate().marshalSendAndReceive(endpoint, request, new SoapActionCallback("GetModuleElements"));
+        return response.getGetModuleElementsResult().getModuleElementKey();
     }
 
     public void createFeatureBranch(String repository, String basedOnBranch, Branch branch) {

@@ -12,7 +12,7 @@
     <li class="sidenav-nav-item" *ngFor="let data of toolData">
       <a class="sidenav-nav-link">
         <span class="sidenav-link-text" *ngIf="collapsed">{{data.labelName}}</span>
-        <input type="text" class="sidenav-link-text-area" *ngIf="collapsed" [value]="nameInfo">
+        <input type="text" class="sidenav-link-text-area" *ngIf="collapsed" [value]="textContent">
       </a>
       <a class="sidenav-nav-link">
         <span class="sidenav-link-text" *ngIf="collapsed">{{data.labelPlaceholder}}</span>
@@ -24,15 +24,23 @@
       </a>
       <a class="sidenav-nav-link">
         <span class="sidenav-link-text" *ngIf="collapsed">{{data.labelName}}</span>
-        <input type="text" class="sidenav-link-text-area" *ngIf="collapsed">
+        <input type="text" class="sidenav-link-text-area" *ngIf="collapsed" [value]="nameInfo">
       </a>
     </li>
-    <button class="sidenav-button-update" *ngIf="collapsed">Send Update</button>
+    <button class="sidenav-button-update" *ngIf="collapsed" (click)="sendModificationRequest()">Send Update</button>
   </ul>
 </div>
 
-<div *ngFor="let componentData of components" [innerHtml]="getSafeHtml(componentData.pageCode)" #contentContainer>
-  <!-- The HTML from componentData.pageCode will be rendered here -->
+ In your template
+<div *ngIf="component" [innerHtml]="getSafeHtml(component.pageCode)" #contentContainer>
+  <!-- The HTML from selectedComponentData.pageCode will be rendered here -->
+
 </div>
+
+<!--<div *ngFor="let componentData of components" [innerHtml]="getSafeHtml(componentData.pageCode)" #contentContainer>-->
+<!--  &lt;!&ndash; The HTML from componentData.pageCode will be rendered here &ndash;&gt;-->
+<!--</div>-->
+
+
 
 

@@ -31,18 +31,33 @@ export class ModificationtoolComponent implements OnInit{
   nameInfo: string = '';
   typeInfo: string = '';
   tagName: string = '';
-  components?: ComponentData[];
+  textContent: string = '';
+  component?: ComponentData;
+  // components?: ComponentData[];
 
   getSafeHtml(html: string): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
   ngOnInit(): void {
-    this.UserDataService.getComponents().subscribe((data: ComponentData[]) => {
+    this.UserDataService.getComponent().subscribe((data: ComponentData) => {
       console.log(data);
-      this.components = data;
+      this.component = data;
   });
   }
+
+  sendModificationRequest(): void {
+    this.UserDataService.sendComponent(this.component).subscribe((data: ComponentData) => {
+      console.log(data);
+      this.component = data;
+    });
+  }
+  // ngOnInit(): void {
+  //   this.UserDataService.getComponentTest().subscribe((data: ComponentData[]) => {
+  //     console.log(data);
+  //     this.components = data;
+  //   });
+  // }
 
 
   isSelecting: boolean = false;
@@ -88,12 +103,14 @@ export class ModificationtoolComponent implements OnInit{
         const type = this.selectedElement.type;
         const classes = Array.from(this.selectedElement.classList).join(' ');
         const name = this.selectedElement.name;
+        const textContent = this.selectedElement.textContent?.trim() || ''; // Getting the text content
 
         this.elementInfo = `Tag Name: ${tagInfo}\nPlaceholder: ${placeholder}\nClasses: ${classes}`;
         this.placeholderInfo = `${placeholder}`;
         this.tagName = `${tagInfo}`;
         this.typeInfo = `${type}`;
         this.nameInfo = `${name}`;
+        this.textContent = `${textContent}`;
       }
     } else {
       this.elementInfo = '';
@@ -101,6 +118,7 @@ export class ModificationtoolComponent implements OnInit{
       this.nameInfo = '';
       this.typeInfo = '';
       this.nameInfo = '';
+      this.textContent = '';
     }
   }
 

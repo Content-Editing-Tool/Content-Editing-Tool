@@ -12,15 +12,15 @@ export class ContentpageComponent implements OnInit {
 
   constructor(private UserDataService: UserDataService, private sanitizer: DomSanitizer) {}
 
-  components?: ComponentData[];
+  component?: ComponentData;
 
   getSafeHtml(html: string): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
   ngOnInit(): void {
-    this.UserDataService.getComponents().subscribe((data: ComponentData[]) => {
+    this.UserDataService.getComponent().subscribe((data: ComponentData) => {
       console.log(data);
-      this.components = data;
+      this.component = data;
     });
   }
 

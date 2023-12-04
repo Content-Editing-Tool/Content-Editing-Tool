@@ -39,9 +39,73 @@ export class ModificationtoolComponent implements OnInit{
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
+  jsonToHtml(jsonData: any): string {
+    let htmlContent = '';
+    for (const key in jsonData) {
+      htmlContent += `<h1>${key}</h1>`;
+      const value = jsonData[key];
+      for (const innerKey in value) {
+        htmlContent += `<h2>${innerKey}:</h2>`;
+        if (Array.isArray(value[innerKey])) {
+          value[innerKey].forEach((item: any) => {
+            htmlContent += `<p>${item}</p>`;
+          });
+        } else if (typeof value[innerKey] === 'object') {
+          for (const langKey in value[innerKey]) {
+            htmlContent += `<h3>${langKey}:</h3><p contenteditable='true'>${value[innerKey][langKey]}</p>`;
+          }
+        } else {
+          htmlContent += `<p>${value[innerKey]}</p>`;
+        }
+      }
+    }
+    return htmlContent;
+  }
+
+  htmlToJson(htmlData: string): any {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlData, 'text/html');
+    let jsonResult = {};
+
+    doc.querySelectorAll('h1').forEach(h1 => {
+      const key = h1.textContent;
+      let obj = {};
+      let currentElement = h1.nextElementSibling;
+
+      while (currentElement && currentElement.tagName !== 'H1') {
+        if (currentElement.tagName === 'H2') {
+          // @ts-ignore
+          const innerKey = currentElement.textContent.replace(':', '');
+          let value = {};
+          currentElement = currentElement.nextElementSibling;
+          while (currentElement && currentElement.tagName === 'H3') {
+            // @ts-ignore
+            const langKey = currentElement.textContent.replace(':', '').trim();
+            // @ts-ignore
+            const textValue = currentElement.nextElementSibling.textContent;
+            // @ts-ignore
+            value[langKey] = textValue;
+            // @ts-ignore
+            currentElement = currentElement.nextElementSibling.nextElementSibling;
+          }
+          // @ts-ignore
+          obj[innerKey] = value;
+        }
+        // @ts-ignore
+        currentElement = currentElement.nextElementSibling;
+      }
+      // @ts-ignore
+      jsonResult[key] = obj;
+    });
+
+    return jsonResult;
+  }
+
   ngOnInit(): void {
     this.UserDataService.getComponent().subscribe((data: ComponentData) => {
       console.log(data);
+      this.component = data;
+      this.jsonToHtml(data);
       this.component = data;
   });
   }

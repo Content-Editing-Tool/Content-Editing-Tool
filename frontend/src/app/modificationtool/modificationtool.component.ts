@@ -31,18 +31,97 @@ export class ModificationtoolComponent implements OnInit{
   nameInfo: string = '';
   typeInfo: string = '';
   tagName: string = '';
-  components?: ComponentData[];
+  textContent: string = '';
+  component?: ComponentData;
+  // components?: ComponentData[];
 
   getSafeHtml(html: string): SafeHtml {
     return this.sanitizer.bypassSecurityTrustHtml(html);
   }
 
+  jsonToHtml(jsonData: any): string {
+    let htmlContent = '';
+    for (const key in jsonData) {
+      htmlContent += `<h1>${key}</h1>`;
+      const value = jsonData[key];
+      for (const innerKey in value) {
+        htmlContent += `<h2>${innerKey}:</h2>`;
+        if (Array.isArray(value[innerKey])) {
+          value[innerKey].forEach((item: any) => {
+            htmlContent += `<p>${item}</p>`;
+          });
+        } else if (typeof value[innerKey] === 'object') {
+          for (const langKey in value[innerKey]) {
+            htmlContent += `<h3>${langKey}:</h3><p contenteditable='true'>${value[innerKey][langKey]}</p>`;
+          }
+        } else {
+          htmlContent += `<p>${value[innerKey]}</p>`;
+        }
+      }
+    }
+    return htmlContent;
+  }
+
+  htmlToJson(htmlData: string): any {
+    const parser = new DOMParser();
+    const doc = parser.parseFromString(htmlData, 'text/html');
+    let jsonResult = {};
+
+    doc.querySelectorAll('h1').forEach(h1 => {
+      const key = h1.textContent;
+      let obj = {};
+      let currentElement = h1.nextElementSibling;
+
+      while (currentElement && currentElement.tagName !== 'H1') {
+        if (currentElement.tagName === 'H2') {
+          // @ts-ignore
+          const innerKey = currentElement.textContent.replace(':', '');
+          let value = {};
+          currentElement = currentElement.nextElementSibling;
+          while (currentElement && currentElement.tagName === 'H3') {
+            // @ts-ignore
+            const langKey = currentElement.textContent.replace(':', '').trim();
+            // @ts-ignore
+            const textValue = currentElement.nextElementSibling.textContent;
+            // @ts-ignore
+            value[langKey] = textValue;
+            // @ts-ignore
+            currentElement = currentElement.nextElementSibling.nextElementSibling;
+          }
+          // @ts-ignore
+          obj[innerKey] = value;
+        }
+        // @ts-ignore
+        currentElement = currentElement.nextElementSibling;
+      }
+      // @ts-ignore
+      jsonResult[key] = obj;
+    });
+
+    return jsonResult;
+  }
+
   ngOnInit(): void {
-    this.UserDataService.getComponents().subscribe((data: ComponentData[]) => {
+    this.UserDataService.getComponent().subscribe((data: ComponentData) => {
       console.log(data);
-      this.components = data;
+      this.component = data;
+      this.jsonToHtml(data);
+      this.component = data;
   });
   }
+
+  sendModificationRequest(): void {
+    this.UserDataService.sendComponent(this.component).subscribe((data: ComponentData) => {
+      console.log(data);
+      this.component = data;
+    });
+  }
+  // ngOnInit(): void {
+  //   this.UserDataService.getComponentTest().subscribe((data: ComponentData[]) => {
+  //     console.log(data);
+  //     this.components = data;
+  //   });
+  // }
 
 
   isSelecting: boolean = false;
@@ -88,12 +167,14 @@ export class ModificationtoolComponent implements OnInit{
         const type = this.selectedElement.type;
         const classes = Array.from(this.selectedElement.classList).join(' ');
         const name = this.selectedElement.name;
+        const textContent = this.selectedElement.textContent?.trim() || ''; // Getting the text content
 
         this.elementInfo = `Tag Name: ${tagInfo}\nPlaceholder: ${placeholder}\nClasses: ${classes}`;
         this.placeholderInfo = `${placeholder}`;
         this.tagName = `${tagInfo}`;
         this.typeInfo = `${type}`;
         this.nameInfo = `${name}`;
+        this.textContent = `${textContent}`;
       }
     } else {
       this.elementInfo = '';
@@ -101,6 +182,7 @@ export class ModificationtoolComponent implements OnInit{
       this.nameInfo = '';
       this.typeInfo = '';
       this.nameInfo = '';
+      this.textContent = '';
     }
   }
 

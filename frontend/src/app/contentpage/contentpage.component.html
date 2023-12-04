@@ -1,3 +1,4 @@
-<div *ngFor="let componentData of components" [innerHtml]="getSafeHtml(componentData.pageCode)" #contentContainer>
-  <!-- The HTML from componentData.pageCode will be rendered here -->
+<!-- In your template -->
+<div *ngIf="component" [innerHtml]="getSafeHtml(component.pageCode)" #contentContainer>
+  <!-- The HTML from selectedComponentData.pageCode will be rendered here -->
 </div>

@@ -33,6 +33,7 @@ export class ModificationtoolComponent implements OnInit{
   tagName: string = '';
   textContent: string = '';
   component?: ComponentData;
+  componentSend?: ComponentData;
   htmlContent: string = '';
   // components?: ComponentData[];
 
@@ -130,14 +131,13 @@ export class ModificationtoolComponent implements OnInit{
   }
 
   sendModificationRequest(): void {
-    if (this.htmlToJson && this.component && this.component.pageCode) {
-      const convertedJson = this.htmlToJson(this.component.pageCode);
+    this.componentSend = this.component;
+    if (this.htmlToJson && this.componentSend && this.componentSend.pageCode) {
+      const convertedJson = this.htmlToJson(this.componentSend.pageCode);
       console.log(convertedJson);
       if (convertedJson) {
-        this.component.pageCode = convertedJson;
-        console.log(this.component.pageCode); // Consider removing for production
 
-        this.UserDataService.sendComponent(this.component).subscribe(
+        this.UserDataService.sendComponent(this.componentSend).subscribe(
           (data: ComponentData) => {
 
           },
@@ -152,12 +152,7 @@ export class ModificationtoolComponent implements OnInit{
       console.error('Required properties or methods are not defined');
     }
   }
-  // ngOnInit(): void {
-  //   this.UserDataService.getComponentTest().subscribe((data: ComponentData[]) => {
-  //     console.log(data);
-  //     this.components = data;
-  //   });
-  // }
+
 
 
   isSelecting: boolean = false;

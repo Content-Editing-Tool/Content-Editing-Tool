@@ -19,7 +19,7 @@ export class UserDataService {
   }
 
   sendComponent(ComponentData: ComponentData | undefined): Observable<ComponentData>{
-    return this.http.post<ComponentData>(`${this.baseUrlTest2}`, ComponentData?.pageCode);
+    return this.http.post<ComponentData>(`${this.baseUrlTest2}`, ComponentData);
   }
 
   getComponentTest(): Observable<ComponentData[]>{

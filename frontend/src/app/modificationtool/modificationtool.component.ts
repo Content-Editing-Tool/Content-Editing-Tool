@@ -33,6 +33,7 @@ export class ModificationtoolComponent implements OnInit{
   tagName: string = '';
   textContent: string = '';
   component?: ComponentData;
+  htmlContent: string = '';
   // components?: ComponentData[];
 
   getSafeHtml(html: string): SafeHtml {
@@ -65,56 +66,91 @@ export class ModificationtoolComponent implements OnInit{
   htmlToJson(htmlData: string): any {
     const parser = new DOMParser();
     const doc = parser.parseFromString(htmlData, 'text/html');
-    let jsonResult = {};
+    let jsonResult: { [key: string]: any } = {};
 
     doc.querySelectorAll('h1').forEach(h1 => {
-      const key = h1.textContent;
-      let obj = {};
-      let currentElement = h1.nextElementSibling;
+      const key = h1.textContent?.trim();
+      if (!key) return; // Skip if key is null or empty
+
+      let obj: { [key: string]: any } = {};
+      let currentElement = h1.nextElementSibling as HTMLElement | null;
 
       while (currentElement && currentElement.tagName !== 'H1') {
         if (currentElement.tagName === 'H2') {
-          // @ts-ignore
-          const innerKey = currentElement.textContent.replace(':', '');
-          let value = {};
-          currentElement = currentElement.nextElementSibling;
-          while (currentElement && currentElement.tagName === 'H3') {
-            // @ts-ignore
-            const langKey = currentElement.textContent.replace(':', '').trim();
-            // @ts-ignore
-            const textValue = currentElement.nextElementSibling.textContent;
-            // @ts-ignore
-            value[langKey] = textValue;
-            // @ts-ignore
-            currentElement = currentElement.nextElementSibling.nextElementSibling;
+          const innerKey = currentElement.textContent?.trim().replace(':', '');
+          if (!innerKey) {
+            currentElement = currentElement.nextElementSibling as HTMLElement | null;
+            continue;
           }
-          // @ts-ignore
-          obj[innerKey] = value;
+
+          if (innerKey === 'entities') {
+            obj[innerKey] = [];
+            currentElement = currentElement.nextElementSibling as HTMLElement | null;
+            while (currentElement && currentElement.tagName === 'P') {
+              obj[innerKey].push(currentElement.textContent?.trim() || '');
+              currentElement = currentElement.nextElementSibling as HTMLElement | null;
+            }
+          } else if (innerKey === 'questionText') {
+            obj[innerKey] = {};
+            currentElement = currentElement.nextElementSibling as HTMLElement | null;
+            while (currentElement && currentElement.tagName === 'H3') {
+              const langKey = currentElement.textContent?.trim().replace(':', '');
+              if (!langKey) {
+                currentElement = currentElement.nextElementSibling as HTMLElement | null;
+                continue;
+              }
+
+              currentElement = currentElement.nextElementSibling as HTMLElement | null;
+              if (currentElement) {
+                obj[innerKey][langKey] = currentElement.textContent?.trim() || '';
+              }
+              // @ts-ignore
+              currentElement = currentElement.nextElementSibling as HTMLElement | null;
+            }
+          }
         }
         // @ts-ignore
-        currentElement = currentElement.nextElementSibling;
+        currentElement = currentElement.nextElementSibling as HTMLElement | null;
       }
-      // @ts-ignore
       jsonResult[key] = obj;
     });
 
     return jsonResult;
   }
 
+
+
   ngOnInit(): void {
     this.UserDataService.getComponent().subscribe((data: ComponentData) => {
       console.log(data);
       this.component = data;
       this.jsonToHtml(data);
-      this.component = data;
+       this.component.pageCode = this.jsonToHtml(data);
   });
   }
 
   sendModificationRequest(): void {
-    this.UserDataService.sendComponent(this.component).subscribe((data: ComponentData) => {
-      console.log(data);
-      this.component = data;
-    });
+    if (this.htmlToJson && this.component && this.component.pageCode) {
+      const convertedJson = this.htmlToJson(this.component.pageCode);
+      console.log(convertedJson);
+      if (convertedJson) {
+        this.component.pageCode = convertedJson;
+        console.log(this.component.pageCode); // Consider removing for production
+
+        this.UserDataService.sendComponent(this.component).subscribe(
+          (data: ComponentData) => {
+
+          },
+          error => {
+            console.error('Error sending component data:', error);
+          }
+        );
+      } else {
+        console.error('Conversion to JSON failed');
+      }
+    } else {
+      console.error('Required properties or methods are not defined');
+    }
   }
   // ngOnInit(): void {
   //   this.UserDataService.getComponentTest().subscribe((data: ComponentData[]) => {
